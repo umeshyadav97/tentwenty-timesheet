@@ -1,0 +1,106 @@
+import type { TimesheetEntry } from "@/types/timesheet";
+
+const timesheets = [
+  {
+    endDate: "2024-01-05",
+    hours: 40,
+    id: "week-1",
+    dateRange: "1 - 5 January, 2024",
+    startDate: "2024-01-01",
+    weekNumber: 1,
+  },
+  {
+    endDate: "2024-01-12",
+    hours: 42,
+    id: "week-2",
+    dateRange: "8 - 12 January, 2024",
+    startDate: "2024-01-08",
+    weekNumber: 2,
+  },
+  {
+    endDate: "2024-01-19",
+    hours: 32,
+    id: "week-3",
+    dateRange: "15 - 19 January, 2024",
+    startDate: "2024-01-15",
+    weekNumber: 3,
+  },
+  {
+    endDate: "2024-01-26",
+    hours: 40,
+    id: "week-4",
+    dateRange: "22 - 26 January, 2024",
+    startDate: "2024-01-22",
+    weekNumber: 4,
+  },
+  {
+    endDate: "2024-02-01",
+    hours: 0,
+    id: "week-5",
+    dateRange: "28 January - 1 February, 2024",
+    startDate: "2024-01-28",
+    weekNumber: 5,
+  },
+  {
+    endDate: "2024-02-09",
+    hours: 38,
+    id: "week-6",
+    dateRange: "5 - 9 February, 2024",
+    startDate: "2024-02-05",
+    weekNumber: 6,
+  },
+  {
+    endDate: "2024-02-16",
+    hours: 40,
+    id: "week-7",
+    dateRange: "12 - 16 February, 2024",
+    startDate: "2024-02-12",
+    weekNumber: 7,
+  },
+  {
+    endDate: "2024-02-23",
+    hours: 0,
+    id: "week-8",
+    dateRange: "19 - 23 February, 2024",
+    startDate: "2024-02-19",
+    weekNumber: 8,
+  },
+  {
+    endDate: "2024-03-01",
+    hours: 36,
+    id: "week-9",
+    dateRange: "26 February - 1 March, 2024",
+    startDate: "2024-02-26",
+    weekNumber: 9,
+  },
+  {
+    endDate: "2024-03-08",
+    hours: 40,
+    id: "week-10",
+    dateRange: "4 - 8 March, 2024",
+    startDate: "2024-03-04",
+    weekNumber: 10,
+  },
+  {
+    endDate: "2024-03-15",
+    hours: 22,
+    id: "week-11",
+    dateRange: "11 - 15 March, 2024",
+    startDate: "2024-03-11",
+    weekNumber: 11,
+  },
+  {
+    endDate: "2024-03-22",
+    hours: 0,
+    id: "week-12",
+    dateRange: "18 - 22 March, 2024",
+    startDate: "2024-03-18",
+    weekNumber: 12,
+  },
+];
+
+export const timesheetEntries: TimesheetEntry[] = timesheets.map((entry) => ({
+  ...entry,
+  status:
+    entry.hours >= 40 ? "completed" : entry.hours > 0 ? "incomplete" : "missing",
+}));

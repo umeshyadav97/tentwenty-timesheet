@@ -1,6 +1,6 @@
 export function LoginBrandPanel() {
   return (
-    <section className="flex min-h-80 items-center bg-brand px-6 py-12 text-white sm:px-10 md:px-16 lg:min-h-dvh lg:px-12 xl:px-16">
+    <section className="hidden min-h-dvh items-center bg-blue-600 px-12 py-12 text-white md:flex xl:px-16">
       <div className="max-w-md">
         <p className="text-3xl font-bold leading-none">ticktock</p>
         <p className="mt-4 text-sm leading-6 text-white/85">

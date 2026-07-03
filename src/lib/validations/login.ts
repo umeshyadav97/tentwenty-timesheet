@@ -22,6 +22,8 @@ export function validateLoginForm(
 
   if (!values.password) {
     errors.password = "Password is required";
+  } else if (/\s/.test(values.password)) {
+    errors.password = "Password cannot contain spaces";
   } else if (values.password.length < 8) {
     errors.password = "Password must be at least 8 characters";
   }
