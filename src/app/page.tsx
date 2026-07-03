@@ -1,16 +1,14 @@
+import { LoginBrandPanel } from "@/components/auth/login-brand-panel";
+import { LoginForm } from "@/components/auth/login-form";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-950">
-      <section className="w-full max-w-md text-center">
-        <p className="text-sm font-medium uppercase tracking-[0.18em] text-slate-500">
-          Tentwenty
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight">
-          Timesheet Management
-        </h1>
-        <p className="mt-3 text-base leading-7 text-slate-600">
-          Clean assessment workspace ready for the login and dashboard flow.
-        </p>
+    <main className="min-h-dvh bg-white text-ink">
+      <section className="flex min-h-dvh flex-col lg:grid lg:grid-cols-2">
+        <div className="flex flex-1 items-center justify-center bg-white px-6 py-12 sm:px-10 md:px-16 lg:min-h-dvh lg:justify-start lg:px-16 xl:px-20">
+          <LoginForm />
+        </div>
+        <LoginBrandPanel />
       </section>
     </main>
   );
