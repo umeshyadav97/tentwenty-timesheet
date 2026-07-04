@@ -9,7 +9,7 @@ const statusClassName: Record<TimesheetStatus, string> = {
 export function StatusBadge({ status }: { status: TimesheetStatus }) {
   return (
     <span
-      className={`inline-flex rounded-md px-2 py-1 text-xs font-bold uppercase leading-none ${statusClassName[status]}`}
+      className={`inline-flex rounded-md px-2 py-1 text-xs font-semibold uppercase leading-none ${statusClassName[status]}`}
     >
       {status}
     </span>
