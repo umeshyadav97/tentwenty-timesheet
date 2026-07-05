@@ -1,4 +1,5 @@
 import { ArrowDown } from "lucide-react";
+import Link from "next/link";
 import { StatusBadge } from "@/components/timesheets/status-badge";
 import type { TimesheetEntry } from "@/types/timesheet";
 
@@ -61,12 +62,12 @@ export function TimesheetTable({ entries }: TimesheetTableProps) {
                   <StatusBadge status={entry.status} />
                 </td>
                 <td className="whitespace-nowrap px-4 py-4 text-right">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/dashboard/timesheets/${entry.id}`}
                     className="cursor-pointer font-medium text-blue-600 transition hover:text-blue-700"
                   >
                     {getActionLabel(entry.status)}
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}

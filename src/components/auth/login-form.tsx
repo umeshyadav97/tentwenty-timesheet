@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Spinner } from "@/components/ui/spinner";
 import { TextField } from "@/components/ui/text-field";
 import {
   loginInitialValues,
@@ -115,7 +116,10 @@ export function LoginForm() {
         className="mt-4 w-full"
         disabled={formik.isSubmitting}
       >
-        {formik.isSubmitting ? "Signing in..." : "Sign in"}
+        <span className="inline-flex items-center justify-center gap-2">
+          {formik.isSubmitting ? <Spinner className="size-3" /> : null}
+          {formik.isSubmitting ? "Signing in..." : "Sign in"}
+        </span>
       </Button>
     </form>
   );

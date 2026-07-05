@@ -3,6 +3,7 @@
 import { FilterSelect } from "@/components/dashboard/filter-select";
 import { Pagination } from "@/components/dashboard/pagination";
 import { TimesheetTable } from "@/components/timesheets/timesheet-table";
+import { Spinner } from "@/components/ui/spinner";
 import { useTimesheets } from "@/hooks/use-timesheets";
 import {
   dateRangeFilters,
@@ -47,8 +48,9 @@ export function DashboardClient() {
 
       <div className="mt-5">
         {isLoading ? (
-          <div className="rounded-md border border-slate-200 p-8 text-sm text-slate-500">
-            Loading timesheets...
+          <div className="flex items-center gap-2 rounded-md border border-slate-200 p-8 text-sm text-slate-500">
+            <Spinner className="size-4" />
+            <span>Loading timesheets...</span>
           </div>
         ) : null}
 
