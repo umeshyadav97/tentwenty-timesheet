@@ -1,6 +1,17 @@
+import {
+  allDateRangeValue,
+  allStatusValue,
+  completedTimesheetHours,
+  dateRangeFilters,
+  timesheetSeeds,
+  workWeekDayCount,
+} from "@/constants/timesheet.constants";
 import type { TaskEntry, WeekDay } from "@/types/task";
-import type { TimesheetEntry } from "@/types/timesheet";
-import { timesheetEntries } from "@/lib/timesheets/data";
+import type {
+  TimesheetDateRangeFilter,
+  TimesheetEntry,
+  TimesheetStatus,
+} from "@/types/timesheet";
 
 const taskNames = [
   "Homepage Development",
@@ -17,6 +28,53 @@ const dayFormatter = new Intl.DateTimeFormat("en-US", {
 const weekdayFormatter = new Intl.DateTimeFormat("en-US", {
   weekday: "long",
 });
+
+export function getTimesheetStatus(hours: number): TimesheetStatus {
+  if (hours >= completedTimesheetHours) {
+    return "completed";
+  }
+
+  if (hours > 0) {
+    return "incomplete";
+  }
+
+  return "missing";
+}
+
+export const timesheetEntries: TimesheetEntry[] = timesheetSeeds.map((entry) => ({
+  ...entry,
+  status: getTimesheetStatus(entry.hours),
+}));
+
+function toTime(value: string) {
+  return new Date(`${value}T00:00:00`).getTime();
+}
+
+function overlapsDateRange(entry: TimesheetEntry, range: TimesheetDateRangeFilter) {
+  return (
+    toTime(entry.startDate) <= toTime(range.endDate) &&
+    toTime(entry.endDate) >= toTime(range.startDate)
+  );
+}
+
+export function filterTimesheets(
+  entries: TimesheetEntry[],
+  dateRangeValue: string,
+  statusValue: string,
+) {
+  const selectedDateRange =
+    dateRangeFilters.find((range) => range.value === dateRangeValue) ??
+    dateRangeFilters.find((range) => range.value === allDateRangeValue) ??
+    dateRangeFilters[0];
+
+  return entries.filter((entry) => {
+    const matchesDateRange = overlapsDateRange(entry, selectedDateRange);
+    const matchesStatus =
+      statusValue === allStatusValue || entry.status === statusValue;
+
+    return matchesDateRange && matchesStatus;
+  });
+}
 
 function addDays(date: Date, days: number) {
   const nextDate = new Date(date);
@@ -54,7 +112,7 @@ export function getTimesheetById(id: string) {
 export function getWeekDays(timesheet: TimesheetEntry): WeekDay[] {
   const startDate = new Date(`${timesheet.startDate}T00:00:00`);
 
-  return Array.from({ length: 5 }, (_, dayIndex) => {
+  return Array.from({ length: workWeekDayCount }, (_, dayIndex) => {
     const date = addDays(startDate, dayIndex);
     const dayLabel = weekdayFormatter.format(date);
 

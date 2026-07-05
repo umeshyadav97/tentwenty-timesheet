@@ -1,11 +1,10 @@
 import { LoginBrandPanel } from "@/components/auth/login-brand-panel";
 import { LoginForm } from "@/components/auth/login-form";
-import { authOptions } from "@/lib/auth/options";
-import { getServerSession } from "next-auth";
+import { getAuthSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
   if (session) {
     redirect("/dashboard");

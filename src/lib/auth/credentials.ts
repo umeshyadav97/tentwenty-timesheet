@@ -1,3 +1,5 @@
+import type { LoginFormValues } from "@/types/auth";
+
 export const demoUser = {
   id: "user-1",
   email: "john@tentwenty.com",
@@ -15,16 +17,13 @@ function getNameFromEmail(email: string) {
     .join(" ") || demoUser.name;
 }
 
-export function verifyDemoCredentials(email?: string, password?: string) {
-  if (!email || !password) {
-    return null;
-  }
-
+export function verifyDemoCredentials(
+  credentials: Pick<LoginFormValues, "email" | "password">,
+) {
+  const { email, password } = credentials;
   const normalizedEmail = email.trim().toLowerCase();
-  const normalizedPassword = password;
   const isAllowedUser =
-    normalizedEmail === demoUser.email &&
-    normalizedPassword === demoUser.password;
+    normalizedEmail === demoUser.email && password === demoUser.password;
 
   if (!isAllowedUser) {
     return null;

@@ -3,8 +3,14 @@
 import { useMemo, useState } from "react";
 import { AddEntryModal } from "@/components/timesheets/add-entry-modal";
 import { WeekDaySection } from "@/components/timesheets/week-day-section";
-import type { TaskEntry, TaskFormValues, WeekDay } from "@/types/task";
+import {
+  addTaskEntry,
+  deleteTaskEntry,
+  updateTaskEntry,
+} from "@/services/timesheet-task.service";
+import type { TaskFormValues, WeekDay } from "@/types/task";
 import type { TimesheetEntry } from "@/types/timesheet";
+import { waitForUiTransition } from "@/utils/ui.utils";
 
 type WeekTimesheetClientProps = {
   days: WeekDay[];
@@ -23,26 +29,12 @@ type ModalState =
       taskId: string;
     };
 
-function createTask(dayLabel: string, values: TaskFormValues): TaskEntry {
-  return {
-    ...values,
-    dayLabel,
-    id: `${dayLabel.toLowerCase()}-${Date.now()}`,
-  };
-}
-
 function getTaskById(days: WeekDay[], taskId?: string) {
   if (!taskId) {
     return undefined;
   }
 
   return days.flatMap((day) => day.tasks).find((task) => task.id === taskId);
-}
-
-function waitForLocalUpdate() {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, 250);
-  });
 }
 
 export function WeekTimesheetClient({
@@ -74,55 +66,37 @@ export function WeekTimesheetClient({
 
   async function openEditModal(dayLabel: string, taskId: string) {
     setEditingTaskId(taskId);
-    await waitForLocalUpdate();
+    await waitForUiTransition();
     setModalState({ dayLabel, mode: "edit", taskId });
     setEditingTaskId(null);
   }
 
   async function addTask(dayLabel: string, values: TaskFormValues) {
     setIsSavingEntry(true);
-    await waitForLocalUpdate();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) =>
-        day.dayLabel === dayLabel
-          ? { ...day, tasks: [...day.tasks, createTask(dayLabel, values)] }
-          : day,
-      ),
-    );
+    await waitForUiTransition();
+    setWeekDays((currentDays) => addTaskEntry(currentDays, dayLabel, values));
     setIsSavingEntry(false);
     closeModal();
   }
 
   async function updateTask(taskId: string, values: TaskFormValues) {
     setIsSavingEntry(true);
-    await waitForLocalUpdate();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) => ({
-        ...day,
-        tasks: day.tasks.map((task) =>
-          task.id === taskId ? { ...task, ...values } : task,
-        ),
-      })),
-    );
+    await waitForUiTransition();
+    setWeekDays((currentDays) => updateTaskEntry(currentDays, taskId, values));
     setIsSavingEntry(false);
     closeModal();
   }
 
   async function deleteTask(taskId: string) {
     setDeletingTaskId(taskId);
-    await waitForLocalUpdate();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) => ({
-        ...day,
-        tasks: day.tasks.filter((task) => task.id !== taskId),
-      })),
-    );
+    await waitForUiTransition();
+    setWeekDays((currentDays) => deleteTaskEntry(currentDays, taskId));
     setDeletingTaskId(null);
   }
 
   return (
     <>
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <section className="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-slate-950">

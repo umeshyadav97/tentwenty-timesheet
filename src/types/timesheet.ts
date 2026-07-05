@@ -1,4 +1,6 @@
 export type TimesheetStatus = "completed" | "incomplete" | "missing";
+export type TimesheetSortDirection = "asc" | "desc";
+export type TimesheetSortKey = "startDate" | "status" | "weekNumber";
 
 export type TimesheetEntry = {
   endDate: string;

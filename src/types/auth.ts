@@ -1,5 +1,1 @@
-export type LoginFormValues = {
-  email: string;
-  password: string;
-  remember: boolean;
-};
+export type { LoginFormValues } from "@/lib/validations/login";
