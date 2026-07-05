@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AddEntryModal } from "@/components/timesheets/add-entry-modal";
 import { WeekDaySection } from "@/components/timesheets/week-day-section";
+import { waitForUiTransition } from "@/lib/ui/delay";
 import type { TaskEntry, TaskFormValues, WeekDay } from "@/types/task";
 import type { TimesheetEntry } from "@/types/timesheet";
 
@@ -39,12 +40,6 @@ function getTaskById(days: WeekDay[], taskId?: string) {
   return days.flatMap((day) => day.tasks).find((task) => task.id === taskId);
 }
 
-function waitForLocalUpdate() {
-  return new Promise((resolve) => {
-    window.setTimeout(resolve, 250);
-  });
-}
-
 export function WeekTimesheetClient({
   days,
   timesheet,
@@ -74,14 +69,14 @@ export function WeekTimesheetClient({
 
   async function openEditModal(dayLabel: string, taskId: string) {
     setEditingTaskId(taskId);
-    await waitForLocalUpdate();
+    await waitForUiTransition();
     setModalState({ dayLabel, mode: "edit", taskId });
     setEditingTaskId(null);
   }
 
   async function addTask(dayLabel: string, values: TaskFormValues) {
     setIsSavingEntry(true);
-    await waitForLocalUpdate();
+    await waitForUiTransition();
     setWeekDays((currentDays) =>
       currentDays.map((day) =>
         day.dayLabel === dayLabel
@@ -95,7 +90,7 @@ export function WeekTimesheetClient({
 
   async function updateTask(taskId: string, values: TaskFormValues) {
     setIsSavingEntry(true);
-    await waitForLocalUpdate();
+    await waitForUiTransition();
     setWeekDays((currentDays) =>
       currentDays.map((day) => ({
         ...day,
@@ -110,7 +105,7 @@ export function WeekTimesheetClient({
 
   async function deleteTask(taskId: string) {
     setDeletingTaskId(taskId);
-    await waitForLocalUpdate();
+    await waitForUiTransition();
     setWeekDays((currentDays) =>
       currentDays.map((day) => ({
         ...day,
@@ -122,7 +117,7 @@ export function WeekTimesheetClient({
 
   return (
     <>
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <section className="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
         <div className="flex flex-col gap-4 border-b border-slate-100 pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-slate-950">

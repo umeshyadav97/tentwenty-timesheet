@@ -3,6 +3,7 @@
 import { FilterSelect } from "@/components/dashboard/filter-select";
 import { Pagination } from "@/components/dashboard/pagination";
 import { TimesheetTable } from "@/components/timesheets/timesheet-table";
+import { OverlayLoader } from "@/components/ui/overlay-loader";
 import { Spinner } from "@/components/ui/spinner";
 import { useTimesheets } from "@/hooks/use-timesheets";
 import {
@@ -16,6 +17,7 @@ export function DashboardClient() {
     entries,
     error,
     filteredCount,
+    isRefreshing,
     isLoading,
     page,
     pageSize,
@@ -23,12 +25,15 @@ export function DashboardClient() {
     setPage,
     setPageSize,
     setStatus,
+    setSort,
+    sortDirection,
+    sortKey,
     status,
     totalPages,
   } = useTimesheets();
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <div className="w-full rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <h1 className="text-xl font-bold text-slate-950">Your Timesheets</h1>
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -46,7 +51,7 @@ export function DashboardClient() {
         />
       </div>
 
-      <div className="mt-5">
+      <div className="relative mt-5">
         {isLoading ? (
           <div className="flex items-center gap-2 rounded-md border border-slate-200 p-8 text-sm text-slate-500">
             <Spinner className="size-4" />
@@ -61,12 +66,26 @@ export function DashboardClient() {
         ) : null}
 
         {!isLoading && !error && entries.length > 0 ? (
-          <TimesheetTable entries={entries} />
+          <div className="relative">
+            <TimesheetTable
+              entries={entries}
+              sortDirection={sortDirection}
+              sortKey={sortKey}
+              onSort={setSort}
+            />
+
+            {isRefreshing ? (
+              <OverlayLoader label="Updating results..." />
+            ) : null}
+          </div>
         ) : null}
 
         {!isLoading && !error && entries.length === 0 ? (
-          <div className="rounded-md border border-slate-200 p-8 text-sm text-slate-500">
-            No timesheets match the selected filters.
+          <div className="relative rounded-md border border-slate-200 p-8 text-sm text-slate-500">
+            <span>No timesheets match the selected filters.</span>
+            {isRefreshing ? (
+              <OverlayLoader label="Updating results..." />
+            ) : null}
           </div>
         ) : null}
       </div>
@@ -74,6 +93,7 @@ export function DashboardClient() {
       <div className="mt-5">
         <Pagination
           currentPage={page}
+          isLoading={isRefreshing}
           pageSize={pageSize}
           totalItems={filteredCount}
           totalPages={totalPages}

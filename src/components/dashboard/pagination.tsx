@@ -1,9 +1,11 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
 const pageSizeOptions = [5, 10, 20];
 
 type PaginationProps = {
   currentPage: number;
+  isLoading?: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   pageSize: number;
@@ -17,6 +19,7 @@ function getVisiblePages(totalPages: number) {
 
 export function Pagination({
   currentPage,
+  isLoading = false,
   onPageChange,
   onPageSizeChange,
   pageSize,
@@ -33,6 +36,7 @@ export function Pagination({
         <span className="sr-only">Rows per page</span>
         <select
           className="h-8 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-600 outline-none transition hover:border-slate-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10"
+          disabled={isLoading}
           value={pageSize}
           onChange={(event) => onPageSizeChange(Number(event.target.value))}
         >
@@ -42,19 +46,22 @@ export function Pagination({
             </option>
           ))}
         </select>
-        <ChevronRight
+        <ChevronDown
           aria-hidden="true"
-          className="pointer-events-none absolute right-3 top-1/2 size-3 rotate-90 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute right-3 top-1/2 size-3 -translate-y-1/2 text-slate-400"
         />
       </label>
 
       <div className="flex flex-col gap-3 sm:items-end">
-        <p className="text-xs text-slate-500">{totalItems} results</p>
+        <p className="inline-flex items-center gap-2 text-xs text-slate-500">
+          {isLoading ? <Spinner className="size-3" /> : null}
+          {totalItems} results
+        </p>
         <nav className="flex w-fit flex-wrap items-center overflow-hidden rounded-lg border border-slate-200 text-xs text-slate-600">
           <button
             type="button"
             className="flex h-8 cursor-pointer items-center gap-1 border-r border-slate-200 bg-white px-3 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300"
-            disabled={!canGoPrevious}
+            disabled={!canGoPrevious || isLoading}
             onClick={() => onPageChange(currentPage - 1)}
           >
             <ChevronLeft aria-hidden="true" className="size-3" />
@@ -68,6 +75,7 @@ export function Pagination({
               className={`h-8 min-w-8 cursor-pointer border-r border-slate-200 px-3 transition hover:bg-slate-50 ${
                 page === currentPage ? "bg-slate-100 text-blue-600" : "bg-white"
               }`}
+              disabled={isLoading}
               onClick={() => onPageChange(page)}
             >
               {page}
@@ -77,7 +85,7 @@ export function Pagination({
           <button
             type="button"
             className="flex h-8 cursor-pointer items-center gap-1 bg-white px-3 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-300"
-            disabled={!canGoNext}
+            disabled={!canGoNext || isLoading}
             onClick={() => onPageChange(currentPage + 1)}
           >
             Next

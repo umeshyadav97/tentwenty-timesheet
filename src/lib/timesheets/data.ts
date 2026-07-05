@@ -1,3 +1,4 @@
+import { getTimesheetStatus } from "@/lib/timesheets/status";
 import type { TimesheetEntry } from "@/types/timesheet";
 
 const timesheets = [
@@ -101,6 +102,5 @@ const timesheets = [
 
 export const timesheetEntries: TimesheetEntry[] = timesheets.map((entry) => ({
   ...entry,
-  status:
-    entry.hours >= 40 ? "completed" : entry.hours > 0 ? "incomplete" : "missing",
+  status: getTimesheetStatus(entry.hours),
 }));

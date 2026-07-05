@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tentwenty Timesheet
+
+A simplified Timesheet Management application for the Tentwenty front-end developer assessment. The app uses dummy authentication, protected internal API routes, a responsive dashboard table, filters, pagination, and a local add/edit/delete flow for weekly task entries.
+
+## Tech Stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- NextAuth credentials provider
+- Formik for login validation
+- Lucide React icons
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Demo login:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+Email: john@tentwenty.com
+Password: password123
+```
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/app` - App Router pages and route handlers
+- `src/components/auth` - Login screen components
+- `src/components/dashboard` - Timesheet dashboard, filters, pagination, footer
+- `src/components/layout` - Authenticated app shell and navbar
+- `src/components/timesheets` - Table, detail page, task rows, menus, entry modal
+- `src/components/ui` - Reusable form, modal, button, loader, and table primitives
+- `src/hooks` - Client-side data and UI state hooks
+- `src/lib` - Auth config, timesheet data/filter/status helpers, validation, UI utilities
+- `src/types` - Shared TypeScript contracts
 
-## Deploy on Vercel
+## Assumptions
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Authentication is intentionally dummy-only for the assessment.
+- Timesheet list data is served through the internal `/api/timesheets` route.
+- Weekly task add/edit/delete actions are local UI mutations. Refreshing restores the seeded data because no persistence API was provided.
+- Status is derived from weekly hours: `completed` is 40 or more hours, `incomplete` is 1-39 hours, and `missing` is 0 hours.
+- Date filters match any week that overlaps the selected range.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Time Spent
+
+Approximately 8-10 hours.

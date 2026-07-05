@@ -4,8 +4,8 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { OverlayLoader } from "@/components/ui/overlay-loader";
 import { SelectField } from "@/components/ui/select-field";
-import { Spinner } from "@/components/ui/spinner";
 import { TextareaField } from "@/components/ui/textarea-field";
 import type { TaskEntry, TaskFormValues } from "@/types/task";
 
@@ -48,7 +48,7 @@ export function AddEntryModal({
   return (
     <Modal title={mode === "edit" ? "Edit Entry" : "Add New Entry"} onClose={onClose}>
       <form
-        className="space-y-4 p-4"
+        className="relative space-y-4 p-4"
         onSubmit={(event) => {
           event.preventDefault();
           if (isSaving) {
@@ -110,14 +110,7 @@ export function AddEntryModal({
 
         <div className="grid grid-cols-2 gap-3 pt-2">
           <Button type="submit" disabled={isSaving}>
-            <span className="inline-flex items-center justify-center gap-2">
-              {isSaving ? <Spinner className="size-3" /> : null}
-              {isSaving
-                ? "Saving..."
-                : mode === "edit"
-                  ? "Update entry"
-                  : "Add entry"}
-            </span>
+            {mode === "edit" ? "Update entry" : "Add entry"}
           </Button>
           <button
             type="button"
@@ -128,6 +121,8 @@ export function AddEntryModal({
             Cancel
           </button>
         </div>
+
+        {isSaving ? <OverlayLoader label="Saving entry..." /> : null}
       </form>
     </Modal>
   );

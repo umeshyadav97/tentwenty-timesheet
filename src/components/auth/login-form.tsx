@@ -6,12 +6,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Spinner } from "@/components/ui/spinner";
+import { OverlayLoader } from "@/components/ui/overlay-loader";
 import { TextField } from "@/components/ui/text-field";
-import {
-  loginInitialValues,
-  validateLoginForm,
-} from "@/lib/validations/login";
+import { loginInitialValues, validateLoginForm } from "@/lib/validations/login";
 import type { LoginFormValues } from "@/types/auth";
 
 export function LoginForm() {
@@ -55,7 +52,7 @@ export function LoginForm() {
 
   return (
     <form
-      className="w-full max-w-md"
+      className="relative w-full max-w-md"
       aria-label="Login form"
       onSubmit={formik.handleSubmit}
       noValidate
@@ -90,7 +87,7 @@ export function LoginForm() {
       </div>
 
       <p className="mt-3 text-xs leading-5 text-slate-500">
-        Email: john@tentwenty.com · Password: password123
+        Email: john@tentwenty.com - Password: password123
       </p>
 
       <div className="mt-4">
@@ -116,11 +113,12 @@ export function LoginForm() {
         className="mt-4 w-full"
         disabled={formik.isSubmitting}
       >
-        <span className="inline-flex items-center justify-center gap-2">
-          {formik.isSubmitting ? <Spinner className="size-3" /> : null}
-          {formik.isSubmitting ? "Signing in..." : "Sign in"}
-        </span>
+        Sign in
       </Button>
+
+      {formik.isSubmitting ? (
+        <OverlayLoader label="Signing in..." variant="fullscreen" />
+      ) : null}
     </form>
   );
 }

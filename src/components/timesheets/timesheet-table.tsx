@@ -1,10 +1,21 @@
-import { ArrowDown } from "lucide-react";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { SortableTableHeader } from "@/components/ui/sortable-table-header";
+import { Spinner } from "@/components/ui/spinner";
 import { StatusBadge } from "@/components/timesheets/status-badge";
-import type { TimesheetEntry } from "@/types/timesheet";
+import type {
+  TimesheetEntry,
+  TimesheetSortDirection,
+  TimesheetSortKey,
+} from "@/types/timesheet";
 
 type TimesheetTableProps = {
   entries: TimesheetEntry[];
+  onSort: (sortKey: TimesheetSortKey) => void;
+  sortDirection: TimesheetSortDirection;
+  sortKey: TimesheetSortKey;
 };
 
 function getActionLabel(status: TimesheetEntry["status"]) {
@@ -19,16 +30,14 @@ function getActionLabel(status: TimesheetEntry["status"]) {
   return "View";
 }
 
-function SortableHeader({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center gap-4">
-      {label}
-      <ArrowDown aria-hidden="true" className="size-3" />
-    </span>
-  );
-}
+export function TimesheetTable({
+  entries,
+  onSort,
+  sortDirection,
+  sortKey,
+}: TimesheetTableProps) {
+  const [loadingEntryId, setLoadingEntryId] = useState<string | null>(null);
 
-export function TimesheetTable({ entries }: TimesheetTableProps) {
   return (
     <div className="overflow-hidden rounded-md border border-slate-200">
       <div className="overflow-x-auto">
@@ -36,13 +45,31 @@ export function TimesheetTable({ entries }: TimesheetTableProps) {
           <thead className="bg-slate-50 text-slate-500">
             <tr>
               <th className="whitespace-nowrap px-4 py-4 font-bold uppercase">
-                <SortableHeader label="Week #" />
+                <SortableTableHeader
+                  activeSortKey={sortKey}
+                  label="Week #"
+                  sortDirection={sortDirection}
+                  sortKey="weekNumber"
+                  onSort={onSort}
+                />
               </th>
               <th className="whitespace-nowrap px-4 py-4 font-bold uppercase">
-                <SortableHeader label="Date" />
+                <SortableTableHeader
+                  activeSortKey={sortKey}
+                  label="Date"
+                  sortDirection={sortDirection}
+                  sortKey="startDate"
+                  onSort={onSort}
+                />
               </th>
               <th className="whitespace-nowrap px-4 py-4 font-bold uppercase">
-                <SortableHeader label="Status" />
+                <SortableTableHeader
+                  activeSortKey={sortKey}
+                  label="Status"
+                  sortDirection={sortDirection}
+                  sortKey="status"
+                  onSort={onSort}
+                />
               </th>
               <th className="whitespace-nowrap px-4 py-4 text-right font-bold uppercase">
                 Actions
@@ -64,8 +91,12 @@ export function TimesheetTable({ entries }: TimesheetTableProps) {
                 <td className="whitespace-nowrap px-4 py-4 text-right">
                   <Link
                     href={`/dashboard/timesheets/${entry.id}`}
-                    className="cursor-pointer font-medium text-blue-600 transition hover:text-blue-700"
+                    className="inline-flex cursor-pointer items-center gap-2 font-medium text-blue-600 transition hover:text-blue-700"
+                    onClick={() => setLoadingEntryId(entry.id)}
                   >
+                    {loadingEntryId === entry.id ? (
+                      <Spinner className="size-3" />
+                    ) : null}
                     {getActionLabel(entry.status)}
                   </Link>
                 </td>
