@@ -99,7 +99,20 @@ components/
 - `missing` means 0 hours.
 - Date filters include every week that overlaps the selected date range.
 - Refreshing the detail page restores seeded weekly task data.
+  
+## Time Spent
 
+Approximately **12–14 hours** over **1 day**, including:
+
+- Project setup and architecture
+- NextAuth authentication
+- Dashboard implementation
+- Responsive UI development
+- API integration
+- Form validation
+- Component refactoring
+- Testing
+- Documentation and deployment
 ## Tests
 
 Basic coverage exists for:
