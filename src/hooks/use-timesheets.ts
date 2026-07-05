@@ -4,17 +4,17 @@ import { useEffect, useMemo, useState } from "react";
 import {
   allDateRangeValue,
   allStatusValue,
-  filterTimesheets,
-} from "@/lib/timesheets/filters";
-import { timesheetStatusOrder } from "@/lib/timesheets/status";
-import { waitForUiTransition } from "@/lib/ui/delay";
+  defaultPageSize,
+  timesheetStatusOrder,
+} from "@/constants/timesheet.constants";
+import { getTimesheets } from "@/services/timesheet.service";
 import type {
   TimesheetEntry,
   TimesheetSortDirection,
   TimesheetSortKey,
 } from "@/types/timesheet";
-
-const defaultPageSize = 5;
+import { filterTimesheets } from "@/utils/timesheet.utils";
+import { waitForUiTransition } from "@/utils/ui.utils";
 
 type TimesheetsState = {
   data: TimesheetEntry[];
@@ -42,19 +42,11 @@ export function useTimesheets() {
 
     async function loadTimesheets() {
       try {
-        const response = await fetch("/api/timesheets");
-
-        if (!response.ok) {
-          throw new Error("Unable to load timesheets");
-        }
-
-        const payload = (await response.json()) as {
-          entries: TimesheetEntry[];
-        };
+        const entries = await getTimesheets();
 
         if (isMounted) {
           setState({
-            data: payload.entries,
+            data: entries,
             error: null,
             isLoading: false,
           });

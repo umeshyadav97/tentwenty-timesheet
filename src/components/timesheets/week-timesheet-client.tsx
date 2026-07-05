@@ -3,9 +3,14 @@
 import { useMemo, useState } from "react";
 import { AddEntryModal } from "@/components/timesheets/add-entry-modal";
 import { WeekDaySection } from "@/components/timesheets/week-day-section";
-import { waitForUiTransition } from "@/lib/ui/delay";
-import type { TaskEntry, TaskFormValues, WeekDay } from "@/types/task";
+import {
+  addTaskEntry,
+  deleteTaskEntry,
+  updateTaskEntry,
+} from "@/services/timesheet-task.service";
+import type { TaskFormValues, WeekDay } from "@/types/task";
 import type { TimesheetEntry } from "@/types/timesheet";
+import { waitForUiTransition } from "@/utils/ui.utils";
 
 type WeekTimesheetClientProps = {
   days: WeekDay[];
@@ -23,14 +28,6 @@ type ModalState =
       mode: "edit";
       taskId: string;
     };
-
-function createTask(dayLabel: string, values: TaskFormValues): TaskEntry {
-  return {
-    ...values,
-    dayLabel,
-    id: `${dayLabel.toLowerCase()}-${Date.now()}`,
-  };
-}
 
 function getTaskById(days: WeekDay[], taskId?: string) {
   if (!taskId) {
@@ -77,13 +74,7 @@ export function WeekTimesheetClient({
   async function addTask(dayLabel: string, values: TaskFormValues) {
     setIsSavingEntry(true);
     await waitForUiTransition();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) =>
-        day.dayLabel === dayLabel
-          ? { ...day, tasks: [...day.tasks, createTask(dayLabel, values)] }
-          : day,
-      ),
-    );
+    setWeekDays((currentDays) => addTaskEntry(currentDays, dayLabel, values));
     setIsSavingEntry(false);
     closeModal();
   }
@@ -91,14 +82,7 @@ export function WeekTimesheetClient({
   async function updateTask(taskId: string, values: TaskFormValues) {
     setIsSavingEntry(true);
     await waitForUiTransition();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) => ({
-        ...day,
-        tasks: day.tasks.map((task) =>
-          task.id === taskId ? { ...task, ...values } : task,
-        ),
-      })),
-    );
+    setWeekDays((currentDays) => updateTaskEntry(currentDays, taskId, values));
     setIsSavingEntry(false);
     closeModal();
   }
@@ -106,12 +90,7 @@ export function WeekTimesheetClient({
   async function deleteTask(taskId: string) {
     setDeletingTaskId(taskId);
     await waitForUiTransition();
-    setWeekDays((currentDays) =>
-      currentDays.map((day) => ({
-        ...day,
-        tasks: day.tasks.filter((task) => task.id !== taskId),
-      })),
-    );
+    setWeekDays((currentDays) => deleteTaskEntry(currentDays, taskId));
     setDeletingTaskId(null);
   }
 

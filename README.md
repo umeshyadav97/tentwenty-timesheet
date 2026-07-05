@@ -1,18 +1,20 @@
 # Tentwenty Timesheet
 
-A simplified Timesheet Management application for the Tentwenty front-end developer assessment. The app uses dummy authentication, protected internal API routes, a responsive dashboard table, filters, pagination, and a local add/edit/delete flow for weekly task entries.
+A simplified SaaS-style Timesheet Management application for the Tentwenty front-end developer assessment. It includes dummy NextAuth credentials login, an authenticated dashboard, internal API routing, responsive timesheet table controls, pagination, sorting, and local weekly task add/edit/delete interactions.
 
 ## Tech Stack
 
-- Next.js 16 App Router
-- React 19
+- Next.js App Router
+- React
 - TypeScript
-- Tailwind CSS 4
-- NextAuth credentials provider
-- Formik for login validation
+- Tailwind CSS
+- NextAuth with JWT sessions
+- React Hook Form and Zod for login validation
+- Formik is kept as an installed dependency per project preference
 - Lucide React icons
+- Vitest and Testing Library
 
-## Getting Started
+## Setup
 
 Install dependencies:
 
@@ -28,42 +30,93 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-Demo login:
+Demo credentials:
 
 ```text
 Email: john@tentwenty.com
 Password: password123
 ```
 
-## Available Scripts
+## Scripts
 
 ```bash
 npm run dev
 npm run build
 npm run start
 npm run lint
+npm run test
 ```
 
-## Project Structure
+## Environment Variables
 
-- `src/app` - App Router pages and route handlers
-- `src/components/auth` - Login screen components
-- `src/components/dashboard` - Timesheet dashboard, filters, pagination, footer
-- `src/components/layout` - Authenticated app shell and navbar
-- `src/components/timesheets` - Table, detail page, task rows, menus, entry modal
-- `src/components/ui` - Reusable form, modal, button, loader, and table primitives
-- `src/hooks` - Client-side data and UI state hooks
-- `src/lib` - Auth config, timesheet data/filter/status helpers, validation, UI utilities
-- `src/types` - Shared TypeScript contracts
+For local development, the app falls back to a development secret. For production, set:
+
+```text
+NEXTAUTH_SECRET=your-production-secret
+NEXTAUTH_URL=https://your-domain.com
+```
+
+## Folder Structure
+
+```text
+src/
+  app/          Next.js routes and API route handlers
+  components/   Domain and reusable UI components
+  constants/    Static app constants and seeded assessment data
+  hooks/        Client-side state and data hooks
+  lib/          Auth, API client, and validation infrastructure
+  services/     API/service boundaries and local mutation helpers
+  types/        Shared TypeScript contracts
+  utils/        Pure reusable utility functions
+```
+
+Component organization:
+
+```text
+components/
+  auth/
+  dashboard/
+  layout/
+  timesheets/
+  ui/
+```
+
+`ui` contains generic reusable components only. Feature-specific behavior stays in the matching domain folder.
+
+## Architecture Notes
+
+- Pages stay thin and preserve the App Router route structure.
+- Client components do not call `fetch` directly. Timesheet loading goes through `services/timesheet.service.ts`, which uses the shared API client.
+- Auth session access is centralized in `lib/auth/session.ts`.
+- Login validation has a single Zod schema in `lib/validations/login.ts`, reused by both the form and credentials authentication.
+- Timesheet status and filtering rules are pure utilities, making the business rules easy to test and reuse.
+- Weekly task add/edit/delete behavior is intentionally local UI state because no persistence API was provided.
 
 ## Assumptions
 
-- Authentication is intentionally dummy-only for the assessment.
-- Timesheet list data is served through the internal `/api/timesheets` route.
-- Weekly task add/edit/delete actions are local UI mutations. Refreshing restores the seeded data because no persistence API was provided.
-- Status is derived from weekly hours: `completed` is 40 or more hours, `incomplete` is 1-39 hours, and `missing` is 0 hours.
-- Date filters match any week that overlaps the selected range.
+- `completed` means 40 or more hours.
+- `incomplete` means 1-39 hours.
+- `missing` means 0 hours.
+- Date filters include every week that overlaps the selected date range.
+- Refreshing the detail page restores seeded weekly task data.
 
-## Time Spent
+## Tests
 
-Approximately 8-10 hours.
+Basic coverage exists for:
+
+- Button
+- Modal
+- TimesheetTable
+
+Run:
+
+```bash
+npm run test
+```
+
+## Future Improvements
+
+- Add real persistence endpoints for task add/edit/delete.
+- Expand tests around auth validation and timesheet filtering.
+- Add optimistic update rollback once real API mutations exist.
+- Replace seeded constants with API-backed data when available.

@@ -1,16 +1,15 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { PageShell } from "@/components/layout/page-shell";
-import { authOptions } from "@/lib/auth/options";
+import { getAuthSession } from "@/lib/auth/session";
 
 type AppLayoutProps = {
   children: ReactNode;
 };
 
 export async function AppLayout({ children }: AppLayoutProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
   if (!session) {
     redirect("/");

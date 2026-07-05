@@ -1,60 +1,53 @@
 "use client";
 
-import { useFormik } from "formik";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OverlayLoader } from "@/components/ui/overlay-loader";
 import { TextField } from "@/components/ui/text-field";
-import { loginInitialValues, validateLoginForm } from "@/lib/validations/login";
+import { loginInitialValues, loginSchema } from "@/lib/validations/login";
 import type { LoginFormValues } from "@/types/auth";
 
 export function LoginForm() {
   const router = useRouter();
   const [authError, setAuthError] = useState<string | null>(null);
-
-  const formik = useFormik<LoginFormValues>({
-    initialValues: loginInitialValues,
-    validate: validateLoginForm,
-    validateOnBlur: true,
-    validateOnChange: true,
-    onSubmit: async (values, helpers) => {
-      setAuthError(null);
-
-      const result = await signIn("credentials", {
-        email: values.email.trim(),
-        password: values.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setAuthError("Use john@tentwenty.com and password123 to sign in.");
-        helpers.setSubmitting(false);
-        return;
-      }
-
-      router.push("/dashboard");
-      router.refresh();
-    },
+  const {
+    formState: { errors, isSubmitting },
+    handleSubmit,
+    register,
+  } = useForm<LoginFormValues>({
+    defaultValues: loginInitialValues,
+    mode: "onChange",
+    resolver: zodResolver(loginSchema),
   });
 
-  const showErrors = formik.submitCount > 0;
-  const emailError =
-    (formik.touched.email || showErrors) && formik.errors.email
-      ? formik.errors.email
-      : undefined;
-  const passwordError =
-    (formik.touched.password || showErrors) && formik.errors.password
-      ? formik.errors.password
-      : undefined;
+  const onSubmit = handleSubmit(async (values) => {
+    setAuthError(null);
+
+    const result = await signIn("credentials", {
+      email: values.email.trim(),
+      password: values.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setAuthError("Use john@tentwenty.com and password123 to sign in.");
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  });
 
   return (
     <form
       className="relative w-full max-w-md"
       aria-label="Login form"
-      onSubmit={formik.handleSubmit}
+      onSubmit={onSubmit}
       noValidate
     >
       <h1 className="text-base font-bold leading-none text-slate-950">
@@ -64,42 +57,28 @@ export function LoginForm() {
       <div className="mt-5 space-y-4">
         <TextField
           label="Email"
-          name="email"
           type="email"
           placeholder="name@example.com"
           autoComplete="email"
-          value={formik.values.email ?? ""}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          error={emailError}
+          error={errors.email?.message}
+          {...register("email")}
         />
         <TextField
           label="Password"
-          name="password"
           type="password"
           placeholder="Enter your password"
           autoComplete="current-password"
-          value={formik.values.password ?? ""}
-          onBlur={formik.handleBlur}
-          onChange={formik.handleChange}
-          error={passwordError}
+          error={errors.password?.message}
+          {...register("password")}
         />
       </div>
 
       <p className="mt-3 text-xs leading-5 text-slate-500">
-        Email: john@tentwenty.com - Password: password123
+        Use-Email: john@tentwenty.com - Password: password123
       </p>
 
       <div className="mt-4">
-        <Checkbox
-          checked={formik.values.remember === true}
-          label="Remember me"
-          name="remember"
-          onBlur={() => formik.setFieldTouched("remember", true)}
-          onChange={(event) => {
-            formik.setFieldValue("remember", event.currentTarget.checked);
-          }}
-        />
+        <Checkbox label="Remember me" {...register("remember")} />
       </div>
 
       {authError ? (
@@ -108,15 +87,11 @@ export function LoginForm() {
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        className="mt-4 w-full"
-        disabled={formik.isSubmitting}
-      >
+      <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
         Sign in
       </Button>
 
-      {formik.isSubmitting ? (
+      {isSubmitting ? (
         <OverlayLoader label="Signing in..." variant="fullscreen" />
       ) : null}
     </form>

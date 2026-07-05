@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { verifyDemoCredentials } from "@/lib/auth/credentials";
+import { parseLoginCredentials } from "@/lib/validations/login";
 
 export const authOptions: NextAuthOptions = {
   pages: {
@@ -14,10 +15,13 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        return verifyDemoCredentials(
-          credentials?.email,
-          credentials?.password,
-        );
+        const parsedCredentials = parseLoginCredentials(credentials);
+
+        if (!parsedCredentials.success) {
+          return null;
+        }
+
+        return verifyDemoCredentials(parsedCredentials.data);
       },
     }),
   ],
@@ -30,8 +34,8 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string;
+      if (session.user && token.id) {
+        session.user.id = token.id;
       }
 
       return session;

@@ -5,11 +5,11 @@ import { Pagination } from "@/components/dashboard/pagination";
 import { TimesheetTable } from "@/components/timesheets/timesheet-table";
 import { OverlayLoader } from "@/components/ui/overlay-loader";
 import { Spinner } from "@/components/ui/spinner";
-import { useTimesheets } from "@/hooks/use-timesheets";
 import {
   dateRangeFilters,
   statusFilterOptions,
-} from "@/lib/timesheets/filters";
+} from "@/constants/timesheet.constants";
+import { useTimesheets } from "@/hooks/use-timesheets";
 
 export function DashboardClient() {
   const {

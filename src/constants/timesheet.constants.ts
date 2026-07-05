@@ -1,7 +1,21 @@
-import { getTimesheetStatus } from "@/lib/timesheets/status";
-import type { TimesheetEntry } from "@/types/timesheet";
+import type {
+  TimesheetDateRangeFilter,
+  TimesheetStatus,
+} from "@/types/timesheet";
 
-const timesheets = [
+export const allDateRangeValue = "all";
+export const allStatusValue = "all";
+export const defaultPageSize = 5;
+export const workWeekDayCount = 5;
+export const completedTimesheetHours = 40;
+
+export const timesheetStatusOrder: Record<TimesheetStatus, number> = {
+  completed: 1,
+  incomplete: 2,
+  missing: 3,
+};
+
+export const timesheetSeeds = [
   {
     endDate: "2026-07-03",
     hours: 40,
@@ -98,9 +112,47 @@ const timesheets = [
     startDate: "2026-09-14",
     weekNumber: 12,
   },
+] as const;
+
+export const dateRangeFilters: TimesheetDateRangeFilter[] = [
+  {
+    endDate: "9999-12-31",
+    label: "Date Range",
+    startDate: "0001-01-01",
+    value: allDateRangeValue,
+  },
+  {
+    endDate: "2026-07-31",
+    label: "July 2026",
+    startDate: "2026-07-01",
+    value: "jul-2026",
+  },
+  {
+    endDate: "2026-08-31",
+    label: "August 2026",
+    startDate: "2026-08-01",
+    value: "aug-2026",
+  },
+  {
+    endDate: "2026-08-31",
+    label: "July - August 2026",
+    startDate: "2026-07-01",
+    value: "jul-aug-2026",
+  },
+  {
+    endDate: "2026-09-30",
+    label: "September 2026",
+    startDate: "2026-09-01",
+    value: "sep-2026",
+  },
 ];
 
-export const timesheetEntries: TimesheetEntry[] = timesheets.map((entry) => ({
-  ...entry,
-  status: getTimesheetStatus(entry.hours),
-}));
+export const statusFilterOptions: Array<{
+  label: string;
+  value: TimesheetStatus | typeof allStatusValue;
+}> = [
+  { label: "Status", value: allStatusValue },
+  { label: "Completed", value: "completed" },
+  { label: "Incomplete", value: "incomplete" },
+  { label: "Missing", value: "missing" },
+];

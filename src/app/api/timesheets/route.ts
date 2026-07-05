@@ -1,10 +1,9 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth/options";
-import { timesheetEntries } from "@/lib/timesheets/data";
+import { getAuthSession } from "@/lib/auth/session";
+import { timesheetEntries } from "@/utils/timesheet.utils";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

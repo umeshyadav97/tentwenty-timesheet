@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { DashboardFooter } from "@/components/dashboard/dashboard-footer";
 import { AppLayout } from "@/components/layout/app-layout";
 import { WeekTimesheetClient } from "@/components/timesheets/week-timesheet-client";
-import { getTimesheetById, getWeekDays } from "@/lib/timesheets/week-detail";
+import { getTimesheetById, getWeekDays } from "@/utils/timesheet.utils";
 
 type TimesheetDetailPageProps = {
   params: Promise<{
